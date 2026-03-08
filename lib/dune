@@ -1,0 +1,3 @@
+(library
+ (name rcaml)
+ (libraries wayland wayland.protocols eio_main logs.fmt))

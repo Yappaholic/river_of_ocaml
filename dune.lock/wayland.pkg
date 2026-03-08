@@ -1,0 +1,11 @@
+(version dev)
+
+(dune)
+
+(depends ocaml xmlm logs fmt cstruct eio cmdliner)
+
+(source
+ (fetch
+  (url git+https://github.com/yappaholic/ocaml-wayland)))
+
+(dev)

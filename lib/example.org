@@ -1,0 +1,11 @@
+#+BEGIN_SRC ocaml
+let () =
+  river_of_ocaml
+  @@ object { terminal = ghostty
+            , mod = Mod4
+            , keybinds = {|
+            ("M-e", quit);
+            ("M-Return", spawn Ghostty)
+            |}
+    }
+#+END_SRC

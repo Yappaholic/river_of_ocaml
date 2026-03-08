@@ -1,0 +1,4 @@
+(executable
+ (public_name rcaml)
+ (name main)
+ (libraries rcaml wayland wayland.protocols eio_main))
