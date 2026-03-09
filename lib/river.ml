@@ -3,7 +3,16 @@ open Wayland_protocols.River_window_management_v1_client
 module Registry = Wayland.Registry
 
 let hello = print_endline "hellope"
-let protocols = [ "river_window_management_v1" ]
+
+let protocols =
+  [
+    "river_window_manager_v1";
+    "river_layer_shell_v1";
+    "river_xkb_bindings_v1";
+    "wp_single_pixel_buffer_manager_v1";
+    "wl_compositor";
+    "wp_viewporter";
+  ]
 
 type window = [ `V3 ] River_window_v1.t
 type output = [ `V3 ] River_output_v1.t
@@ -17,11 +26,14 @@ type t = {
 
 (* Check if all protocols are supported by compositor *)
 let check_registry (reg : Registry.t) =
-  let protocols_list =
-    List.filter (fun x -> x = false)
-    @@ List.map (fun x -> List.is_empty @@ Registry.get reg x) protocols
-  in
-  if List.length protocols_list != List.length protocols then false else true
+  List.iter
+    (fun x ->
+      if List.is_empty @@ Registry.get reg x then begin
+        Printf.eprintf "Compositor does not support %s, aborting..." x;
+        exit 1
+      end
+      else ())
+    protocols
 
 let create_output (reg : Registry.t) =
   Registry.bind reg
@@ -112,15 +124,10 @@ let run =
   let transport = Wayland.Unix_transport.connect ~sw ~net () in
   let display = Wayland.Client.connect ~sw transport in
   let reg = Registry.of_display display in
-  if check_registry reg = false then begin
-    Logs.err (fun m -> m "Compositor does not support required protocols:");
-    List.iter (fun x -> Printf.eprintf "* %s\n" x) protocols;
-    exit 1
-  end
-  else
-    let _ = create_window_manager reg in
-    while true do
-      ()
-    done
+  check_registry reg;
+  let _ = create_window_manager reg in
+  while true do
+    ()
+  done
 
 let river_of_ocaml = run
